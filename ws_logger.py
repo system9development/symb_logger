@@ -58,23 +58,37 @@ def parse_logs():
         last_timestamp = last_datetime.timestamp()
 
         duration_seconds = last_timestamp - first_timestamp
+        duration_mins = duration_seconds / 60
 
     total_requests = 0
+    name_res_count = 0
+    timeout_count = 0
     error_count = 0
     with open("./logs/symb_conn_metrics.log", 'r') as file:
         for line in file:
             total_requests += 1
-            pattern = "[0-9\-\s:]* | OK"
-            match = re.findall(pattern, line)
+            match = re.findall("OK", line)
             if len(match) > 0:
                 match = match[0].strip()
             else:
+                if len(re.findall("Temp", line)) > 0:
+                    name_res_count += 1
+                else:
+                    # asyncio timeout error
+                    timeout_count += 1
                 error_count += 1
+    
+    errors_per_request = error_count / total_requests
+    errors_per_second = error_count / duration_seconds
+    timeouts_per_minute = timeout_count / duration_mins
+    name_res_per_minute = timeout_count / duration_mins
 
-    errors_per_request = float(error_count) / float(total_requests)
-    errors_per_second = float(error_count) / float(duration_seconds)
+    print(f"Errors per request: {errors_per_request:.4f}")
+    print(f"Errors per second: {errors_per_second:.4f}")
+    print(f"Timeouts per minute: {timeouts_per_minute:.4f}")
+    print(f"Name res errors per minute: {name_res_per_minute:.4f}")
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
-    # parse_logs()
+    # asyncio.run(main())
+    parse_logs()
