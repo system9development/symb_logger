@@ -40,9 +40,6 @@ async def main():
 
 
 def parse_logs():
-    # Find first line with timestamp and last line with timestamp, calculate difference to get total time in minutes
-    # For each line starting with 'ERROR |', add 1 to total count
-    # At the end, total minutes passed / errors == errors per minute
     with open("./logs/symb_conn_metrics.log", 'r') as file:
         lines = file.readlines()
         first_line = lines[0]
