@@ -32,16 +32,10 @@ async def main():
 
         await conn.send(ujson.dumps(ibooks_payload))
 
-        snapshot = False
         while True:
             res = await conn.recv()
             res = ujson.loads(res)
-            if res.get("type") == "book" and not snapshot:
-                snapshot = True
-                logger.info(f"\nTHIS IS A SNAPSHOT WITH TYPE \'BOOK\'\n {res}")
-            else:
-                logger.info(f"\nTHIS IS A DIFF WITH TYPE \'BOOK\' \n {res}")
-
+            logger.info(f"{res}")
     except Exception as e:
         logger.error(f"ERROR:{e}", exc_info=True)
 
